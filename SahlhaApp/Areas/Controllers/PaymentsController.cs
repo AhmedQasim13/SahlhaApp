@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SahlhaApp.Models.DTOs.Request;
-using Stripe;
+﻿using SahlhaApp.Models.DTOs.Request;
 using Stripe.Checkout;
 using System.Security.Claims;
 
@@ -15,15 +10,14 @@ namespace SahlhaApp.Areas.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
-     
+
         public PaymentsController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
         }
 
-
-        [HttpPost("asd")]
+        [HttpPost]
         public async Task<IActionResult> Pay([FromBody] CheckoutRequestDTO request)
         {
             if (request == null)
@@ -33,7 +27,7 @@ namespace SahlhaApp.Areas.Controllers
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
-            var taskAssignment = await _unitOfWork.TaskAssignment.GetOne(e=>e.Id== request.TaskAssignmentId);
+            var taskAssignment = await _unitOfWork.TaskAssignment.GetOne(e => e.Id == request.TaskAssignmentId);
             if (taskAssignment == null)
                 return NotFound("Task assignment not found");
 
@@ -61,6 +55,13 @@ namespace SahlhaApp.Areas.Controllers
             }
             else if (request.PaymentMethod.Equals("Stripe", StringComparison.OrdinalIgnoreCase))
             {
+                // ✅ Check if a Stripe payment already exists for this task
+                var existingPayment = await _unitOfWork.Payment
+                    .GetOne(p => p.TaskAssignmentId == request.TaskAssignmentId);
+
+                if (existingPayment != null)
+                    return Conflict(new { Message = "A payment already exists for this task assignment." });
+
                 Stripe.StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
                 if (string.IsNullOrEmpty(Stripe.StripeConfiguration.ApiKey))
                     return StatusCode(500, "Stripe API key is missing");
@@ -74,7 +75,7 @@ namespace SahlhaApp.Areas.Controllers
                         {
                             PriceData = new SessionLineItemPriceDataOptions
                             {
-                                UnitAmountDecimal = request.Amount * 100, // cents
+                                UnitAmountDecimal = request.Amount * 100,
                                 Currency = request.Currency ?? "usd",
                                 ProductData = new SessionLineItemPriceDataProductDataOptions
                                 {
@@ -107,7 +108,7 @@ namespace SahlhaApp.Areas.Controllers
                     PaymentMethod = paymentMethod,
                     PaymentDate = DateTime.Now,
                     PaymentReference = "12",
-                    TransactionId="12"
+                    TransactionId = "12"
                 };
 
                 await _unitOfWork.Payment.Add(paymentRecord);
@@ -121,14 +122,13 @@ namespace SahlhaApp.Areas.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("Success")]
         public IActionResult Success(string session_id)
         {
-            // Payment success logic here or webhook handling
             return Ok(new { Message = "Payment successful!", SessionId = session_id });
         }
 
-        [HttpGet]
+        [HttpGet("Cancel")]
         public IActionResult Cancel()
         {
             return Ok(new { Message = "Payment canceled." });
