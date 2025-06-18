@@ -104,23 +104,39 @@ builder.Services.AddHttpClient();
 //            .SetIsOriginAllowed(_ => true)); ;
 //});
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", builder =>
-    {
-        builder
-            .WithOrigins(
-                "http://127.0.0.1:5500",
-                "http://localhost:5500"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials(); // Required for SignalR with JWT auth
-    });
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", builder =>
+//    {
+//        builder
+//            .WithOrigins(
+//                "http://127.0.0.1:5500",
+//                "http://localhost:5500"
+//            )
+//            .AllowAnyHeader()
+//            .AllowAnyMethod()
+//            .AllowCredentials(); // Required for SignalR with JWT auth
+//    });
+//});
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", builder =>
+        builder.WithOrigins("http://localhost:5500", "http://127.0.0.1:5500")
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials());
 });
+
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+builder.Services.AddSignalR(options => {
+    options.EnableDetailedErrors = true;
+    options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+});
+
+
 
 var app = builder.Build();
 
@@ -153,7 +169,8 @@ var app = builder.Build();
     }
 
 
-app.UseCors("AllowFrontend");
+//app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
     
     app.UseAuthentication();
@@ -161,6 +178,7 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 app.MapHub<JobHub>("/jobHub");
+app.MapHub<ChatHub>("/chatHub");
 app.Run();
 
  
