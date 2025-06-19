@@ -17,7 +17,7 @@ namespace SahlhaApp.Areas.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost]
+        [HttpPost("Pay")]
         public async Task<IActionResult> Pay([FromBody] CheckoutRequestDTO request)
         {
             if (request == null)

@@ -22,7 +22,7 @@ namespace SahlhaApp.Areas.Identity
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly string FilePath = "D:\\.net diplom\\Angular\\SahetyAPI\\assets\\img";
+        private readonly string FilePath = "C:\\Users\\Msi\\.vscode\\extensions\\haderyatparmagyaa.ashrab-shaay-0.0.10\\media";
 
         public ProfileController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
         {

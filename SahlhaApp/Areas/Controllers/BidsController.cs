@@ -64,7 +64,12 @@ namespace SahlhaApp.Areas.Controllers
             };
 
             await _unitOfWork.TaskAssignment.Add(taskassignment);
-            return Ok("Bid accepted and task assigned successfully.");
+            return Ok(new
+            {
+                TaskAssignmentId = taskassignment.Id,
+                Amount = bid.Amount,
+                ServiceName = bid.Job.Name
+            });
         }
 
         [HttpPost("AddBid")]
