@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SahlhaApp.Models.DTOs.Request
+﻿namespace SahlhaApp.Models.DTOs.Request
 {
     public class CheckoutRequestDTO
     {
@@ -12,5 +6,9 @@ namespace SahlhaApp.Models.DTOs.Request
         public decimal Amount { get; set; }
         public string PaymentMethod { get; set; } // "Stripe" or "CashOnDelivery"
         public string Currency { get; set; } = "usd";
+        public string? City { get; set; } = "Cairo"; // Default city, can be overridden
+        public string? Province { get; set; }
+        public string? Street { get; set; }
+        public string? BuildingNumber { get; set; }
     }
 }

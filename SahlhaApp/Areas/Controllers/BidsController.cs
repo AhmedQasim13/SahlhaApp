@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SahlhaApp.Models.DTOs.Request;
+﻿using SahlhaApp.Models.DTOs.Request;
 using SahlhaApp.Utility.NotifcationService;
 using System.Security.Claims;
 
@@ -116,6 +113,24 @@ namespace SahlhaApp.Areas.Controllers
             };
             return Ok(response);
 
+        }
+        [HttpPut("UpdateTaskAssignment")]
+        public async Task<IActionResult> UpdateTaskAssignment([FromBody] CheckoutRequestDTO checkoutRequestDTO)
+        {
+            var taskAssignment = await _unitOfWork.TaskAssignment.GetOne(e => e.Id == checkoutRequestDTO.TaskAssignmentId);
+            if (taskAssignment == null)
+            {
+                return NotFound("Task assignment not found.");
+            }
+            else
+            {
+                taskAssignment.City = checkoutRequestDTO.City;
+                taskAssignment.Street = checkoutRequestDTO.Street;
+                taskAssignment.BuildingNumber = checkoutRequestDTO.BuildingNumber;
+                taskAssignment.Province = checkoutRequestDTO.Province;
+                await _unitOfWork.Commit();
+            }
+            return Ok();
         }
     }
 }

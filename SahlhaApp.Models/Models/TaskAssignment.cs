@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SahlhaApp.Models.Models
+﻿namespace SahlhaApp.Models.Models
 {
     public class TaskAssignment
     {
@@ -13,6 +7,11 @@ namespace SahlhaApp.Models.Models
         public decimal FinalPrice { get; set; }
         public DateTime AssignedAt { get; set; } = DateTime.Now;
         public bool IsCompleted { get; set; } = false;
+
+        public string? City { get; set; } = "Cairo"; // Default city, can be overridden
+        public string? Province { get; set; }
+        public string? Street { get; set; }
+        public string? BuildingNumber { get; set; }
         public int JobId { get; set; }
         public Job Job { get; set; }
 

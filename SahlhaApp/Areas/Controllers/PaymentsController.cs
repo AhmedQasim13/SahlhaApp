@@ -46,6 +46,7 @@ namespace SahlhaApp.Areas.Controllers
                     ApplicationUserId = userId,
                     PaymentMethodId = paymentMethod.Id,
                     PaymentMethod = paymentMethod
+
                 };
 
                 await _unitOfWork.Payment.Add(payment);
