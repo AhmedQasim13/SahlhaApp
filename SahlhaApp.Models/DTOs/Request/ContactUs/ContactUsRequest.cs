@@ -12,7 +12,10 @@ namespace SahlhaApp.Models.DTOs.Request.ContactUs
 
         [Required]
         [MaxLength(15)]
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+        [Required]
+        [MaxLength(15)]
+        public string LastName { get; set; }
 
         [Required]
         [DataType(DataType.EmailAddress)]

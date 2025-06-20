@@ -8,6 +8,7 @@ using SahlhaApp.DataAccess.Repositories.IRepositories;
 using SahlhaApp.Models.DTOs.Request;
 using SahlhaApp.Models.DTOs.Request.Provider;
 using SahlhaApp.Models.Models;
+using System.Security.Claims;
 
 namespace SahlhaApp.Areas.Controllers
 {
@@ -29,8 +30,10 @@ namespace SahlhaApp.Areas.Controllers
         [HttpPost("JoinAsProvider")]
         public async Task<IActionResult> JoinAsProvider([FromForm] ProviderRequestDto providerRequestDto)
         {
-            var userexists = _userManager.FindByIdAsync(providerRequestDto.ApplicationUserId);
-            if (userexists == null) return Unauthorized();
+            //var userexists = await _userManager.FindByIdAsync(providerRequestDto.ApplicationUserId);
+            //if (userexists == null) return Unauthorized();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
 
             var fileMap = await DocumentHelper.HandleProviderDocumentsAsync(providerRequestDto.Id, providerRequestDto.BirthCertificate, providerRequestDto.CriminalRecord);
 
@@ -46,7 +49,7 @@ namespace SahlhaApp.Areas.Controllers
                     Name = document.Key,
                     Url = document.Value,
                     UploadedAt = DateTime.Now,
-                    ApplicationUserId = providerRequestDto.ApplicationUserId,
+                    ApplicationUserId = userId,
                     DocumentTypeId = docType.Id
 
                 };
@@ -56,7 +59,7 @@ namespace SahlhaApp.Areas.Controllers
             {
                 appliedAt = DateTime.Now,
                 VerificationStatus = VerificationStatus.Pending,
-                ApplicationUserId = providerRequestDto.ApplicationUserId
+                ApplicationUserId = userId
             });
 
             return Ok("Provider application submitted successfully.");

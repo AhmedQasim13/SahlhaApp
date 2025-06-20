@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SahlhaApp.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using SahlhaApp.DataAccess.Data;
 namespace SahlhaApp.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250619195555_addLastNameToContactUs")]
+    partial class addLastNameToContactUs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -368,9 +371,6 @@ namespace SahlhaApp.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProviderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -389,8 +389,6 @@ namespace SahlhaApp.DataAccess.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("DocumentTypeId");
-
-                    b.HasIndex("ProviderId");
 
                     b.ToTable("Documents");
                 });
@@ -916,28 +914,6 @@ namespace SahlhaApp.DataAccess.Migrations
                     b.ToTable("TaskBids");
                 });
 
-            modelBuilder.Entity("SahlhaApp.Models.Models.Visit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("VisitDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("Visits");
-                });
-
             modelBuilder.Entity("SahlhaApp.Models.Models.ScheduledTask", b =>
                 {
                     b.HasBaseType("SahlhaApp.Models.Models.Job");
@@ -1034,10 +1010,6 @@ namespace SahlhaApp.DataAccess.Migrations
                         .HasForeignKey("DocumentTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("SahlhaApp.Models.Models.Provider", null)
-                        .WithMany("Documents")
-                        .HasForeignKey("ProviderId");
 
                     b.Navigation("ApplicationUser");
 
@@ -1240,17 +1212,6 @@ namespace SahlhaApp.DataAccess.Migrations
                     b.Navigation("Provider");
                 });
 
-            modelBuilder.Entity("SahlhaApp.Models.Models.Visit", b =>
-                {
-                    b.HasOne("SahlhaApp.Models.Models.ApplicationUser", "applicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("applicationUser");
-                });
-
             modelBuilder.Entity("SahlhaApp.Models.Models.ScheduledTask", b =>
                 {
                     b.HasOne("SahlhaApp.Models.Models.Job", null)
@@ -1298,8 +1259,6 @@ namespace SahlhaApp.DataAccess.Migrations
 
             modelBuilder.Entity("SahlhaApp.Models.Models.Provider", b =>
                 {
-                    b.Navigation("Documents");
-
                     b.Navigation("Payments");
 
                     b.Navigation("ProviderServiceAvailability");
