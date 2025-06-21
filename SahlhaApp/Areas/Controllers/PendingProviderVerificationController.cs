@@ -1,13 +1,5 @@
-﻿using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using SahlhaApp.DataAccess.Repositories;
-using SahlhaApp.DataAccess.Repositories.IRepositories;
-using SahlhaApp.Models.DTOs.Request;
+﻿using Microsoft.AspNetCore.Identity;
 using SahlhaApp.Models.DTOs.Request.Provider;
-using SahlhaApp.Models.Models;
 using System.Security.Claims;
 
 namespace SahlhaApp.Areas.Controllers
@@ -61,8 +53,7 @@ namespace SahlhaApp.Areas.Controllers
                 VerificationStatus = VerificationStatus.Pending,
                 ApplicationUserId = userId
             });
-
-            return Ok("Provider application submitted successfully.");
+            return Ok(new { message = "Provider application submitted successfully." });
         }
     }
 }

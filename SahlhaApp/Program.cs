@@ -1,19 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SahlhaApp.DataAccess.Data;
 using SahlhaApp.DataAccess.Repositories;
-using SahlhaApp.DataAccess.Repositories.IRepositories;
-using SahlhaApp.Models.DTOs;
-using SahlhaApp.Models.Models;
-using SahlhaApp.Utility;
 using SahlhaApp.Utility.NotifcationService;
 using Scalar.AspNetCore;
 using Stripe;
-using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -118,9 +111,10 @@ builder.Services.AddHttpClient();
 //            .AllowCredentials(); // Required for SignalR with JWT auth
 //    });
 //});
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("AllowAll", builder =>
-        builder.WithOrigins("http://localhost:5502", "http://127.0.0.1:5502")
+        builder.WithOrigins("http://localhost:5501", "http://127.0.0.1:5501")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials());
@@ -130,7 +124,8 @@ builder.Services.AddCors(options => {
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
-builder.Services.AddSignalR(options => {
+builder.Services.AddSignalR(options =>
+{
     options.EnableDetailedErrors = true;
     options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
     options.KeepAliveInterval = TimeSpan.FromSeconds(30);
@@ -140,45 +135,44 @@ builder.Services.AddSignalR(options => {
 
 var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    try
     {
-        try
-        {
-            app.MapOpenApi();
-            app.MapScalarApiReference();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error initializing OpenAPI: {ex.Message}");
-        }
+        app.MapOpenApi();
+        app.MapScalarApiReference();
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error initializing OpenAPI: {ex.Message}");
+    }
+}
 
-    // Seed database
-    using (var scope = app.Services.CreateScope())
+// Seed database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
     {
-        var services = scope.ServiceProvider;
-        try
-        {
-            await DbInitializer.InitializeAsync(services);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error seeding the database: {ex.Message}");
-        }
+        await DbInitializer.InitializeAsync(services);
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error seeding the database: {ex.Message}");
+    }
+}
 
 
 //app.UseCors("AllowFrontend");
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
-    
-    app.UseAuthentication();
-    app.UseAuthorization();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<JobHub>("/jobHub");
 app.MapHub<ChatHub>("/chatHub");
 app.Run();
 
- 
