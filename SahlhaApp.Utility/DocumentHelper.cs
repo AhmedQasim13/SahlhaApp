@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SahlhaApp.Utility
 {
     public class DocumentHelper
     {
-        private static string FilePath = "D:\\Images"; // Change the file path as needed
+        private static string FilePath = "Q:\\EraGP\\NewFront\\NewFront\\documents"; // Change the file path as needed
 
         // Handle a single file upload or update (delete old file if necessary)
         public static async Task<string> HandleSingleFile(IFormFile file, string oldFileName = null)
@@ -61,7 +56,7 @@ namespace SahlhaApp.Utility
 
             return fileMap;
         }
-    
+
 
 
         // Delete a file if it exists
