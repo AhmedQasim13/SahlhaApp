@@ -177,7 +177,7 @@ namespace SahlhaApp.Areas.Controllers
 
         }
 
-        [HttpPost("MarkTaskCompleted")]
+        [HttpPatch("MarkTaskCompleted")]
         public async Task<IActionResult> MarkTaskCompleted(int taskAssignmentId)
         {
             var assignment = await _unitOfWork.TaskAssignment.GetOne(e => e.Id == taskAssignmentId, includes: [e => e.Job]);
