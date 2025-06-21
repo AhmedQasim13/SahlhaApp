@@ -14,5 +14,6 @@ namespace SahlhaApp.Models.DTOs.Request
         public decimal FinalPrice { get; set; }
         public DateTime AssignedAt { get; set; }
         public bool IsCompleted { get; set; }
+        public string ProviderUserId { get; set; }
     }
 }

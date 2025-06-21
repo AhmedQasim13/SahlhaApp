@@ -29,7 +29,7 @@ namespace SahlhaApp.Areas.Controllers
 
             var tasks = await _uow.TaskAssignment
                 .GetAll(t => t.Job.ApplicationUserId == user.Id,
-                        includes: [t => t.Provider, t => t.Job])
+                        includes: [t => t.Provider, t => t.Job,t=>t.Provider.ApplicationUser])
                 .OrderByDescending(t => t.AssignedAt)
                 .Select(t => new TaskAssignmentDto
                 {
@@ -39,7 +39,8 @@ namespace SahlhaApp.Areas.Controllers
                                    t.Provider.ApplicationUser.LastName,
                     FinalPrice = t.FinalPrice,
                     AssignedAt = t.AssignedAt,
-                    IsCompleted = t.IsCompleted
+                    IsCompleted = t.IsCompleted,
+                    ProviderUserId= t.Provider.ApplicationUserId,
                 })
                 .ToListAsync();
 
